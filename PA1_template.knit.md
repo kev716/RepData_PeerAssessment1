@@ -7,15 +7,12 @@ output: html_document
 
 # Reproducible Research Project 1
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-```
+
 
 ## 1. Code for reading in the dataset and/or processing the data
 
-```{r}
 
+```r
 # check if activty.csv is in workspace, if not unzip project file
 if (!file.exists("activity.csv")) {
   unzip("repdata%2Fdata%2Factivity.zip")
@@ -30,7 +27,8 @@ stepsDf$date <- as.Date(stepsDf$date)
 
 ## 2. Histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 # calculate the number steps per day
 stepsDaily <- tapply(stepsDf$steps, stepsDf$date, sum, na.rm=TRUE)
 
@@ -44,21 +42,37 @@ names(stepsDaily) <- "steps"
 qplot(stepsDaily$steps, geom="histogram")
 ```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+<img src="PA1_template_files/figure-html/unnamed-chunk-2-1.png" width="672" />
+
 ## 3. Mean and median number of steps taken each day
 
-```{r}
 
+```r
 meanSteps <- mean(stepsDaily$steps)
 meanSteps
+```
 
+```
+## [1] 9354.23
+```
+
+```r
 medSteps <- median(stepsDaily$steps)
 medSteps
 ```
 
+```
+## [1] 10395
+```
+
 ## 4. Time series plot of the average number of steps taken per interval
 
-```{r}
 
+```r
 # calculate mean number of steps per interval
 stepsInt <- tapply(stepsDf$steps, stepsDf$interval, mean, na.rm=TRUE)
 
@@ -73,22 +87,35 @@ stepsInt$interval <- row.names(stepsInt)
 ggplot(stepsInt, aes(interval, steps, group=1)) + geom_line() + geom_point()
 ```
 
+<img src="PA1_template_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+
 ## The 5-minute interval that, on average, contains the maximum number of steps
 
-```{r}
 
+```r
 # find interval that has maximum number of steps
 maxInt <- stepsInt[max(stepsInt$steps), 2]
 maxInt
 ```
 
+```
+## [1] "1705"
+```
+
 ## 6. Code to describe and show a strategy for imputing missing data
 
-```{r}
+
+```r
 # calculate the number of records with missing steps value
 miss <- sum(is.na(stepsDf$steps))
 miss
+```
 
+```
+## [1] 2304
+```
+
+```r
 # create copy of stepsDf to add imputed values of steps
 stepsImp <- stepsDf
 
@@ -102,7 +129,8 @@ for(i in seq(0, 2355, 5)) {
 
 7. Histogram of the total number of steps taken each day after missing values are imputed
 
-```{r}
+
+```r
 # repeat section 2 (chunk 3), substituting stepsImp (dataframe with 
 # missing values imputed) for stepsDf
 stepsDailyImp <- tapply(stepsImp$steps, stepsImp$date, sum)
@@ -112,24 +140,49 @@ names(stepsDailyImp) <- "steps"
 qplot(stepsDailyImp$steps, geom="histogram")
 ```
 
-```{r}
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+<img src="PA1_template_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+
+
+```r
 # recalculate mean and median number of steps per day after imputed values are added
 meanStepsImp <- mean(stepsDailyImp$steps)
 meanStepsImp
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 medStepsImp <- median(stepsDailyImp$steps)
 medSteps
+```
 
+```
+## [1] 10395
+```
+
+```r
 # combine the 2 mean and median files to determine what changes imputing missing values made
 stepsSummary <- cbind(meanSteps, meanStepsImp, medSteps, medStepsImp)
 stepsSummary
+```
+
+```
+##      meanSteps meanStepsImp medSteps medStepsImp
+## [1,]   9354.23     10766.19    10395    10766.19
 ```
 
 There was an increase in both the mean and median number of steps per day after missing values were imputed. This means that the missing values tended to be during less active intervals of the day.
 
 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
-```{r}
+
+```r
 # create dayType column in stepsImp, designate it as weekend or weekday based on the date
 stepsImp$dayType <- factor(weekdays(stepsImp$date) %in% c("Saturday", "Sunday"), levels=c(FALSE, TRUE), labels=c("weekday","weekend"))
 
@@ -142,5 +195,6 @@ names(dayTypeMeans) <- c("interval", "dayType", "steps")
 
 # create a panel plot of mean steps per interval with separate plots for weekdays and weekends
 ggplot(dayTypeMeans, aes(interval,steps, group=1)) + geom_point() + geom_line() + facet_wrap(~dayType, nrow=1) + labs(y="Steps", x="Interval")
-
 ```
+
+<img src="PA1_template_files/figure-html/unnamed-chunk-9-1.png" width="672" />
