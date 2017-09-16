@@ -15,7 +15,7 @@ output: html_document
 ```r
 # check if activty.csv is in workspace, if not unzip project file
 if (!file.exists("activity.csv")) {
-  unzip("repdata%2Fdata%2Factivity.zip")
+  unzip("activity.zip")
 }
 
 # read actity.csv into dataframe
